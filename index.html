@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trigger Webhook N8N</title>
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -77,6 +76,7 @@
       resultBox.textContent = "Ejecutando...";
 
       try {
+
         // 👇 Usar variable desde config.js
         const webhookURL = window.ENV.WEBHOOK_URL;
 
@@ -89,12 +89,10 @@
         });
 
         const data = await response.json();
-        resultBox.textContent =
-          "Respuesta del flujo:\n\n" + JSON.stringify(data, null, 2);
+        resultBox.textContent = "Respuesta del flujo:\n\n" + JSON.stringify(data, null, 2);
 
       } catch (error) {
-        resultBox.textContent =
-          "Error llamando al webhook:\n\n" + error;
+        resultBox.textContent = "Error llamando al webhook:\n\n" + error;
       }
     });
   </script>
