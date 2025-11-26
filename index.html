@@ -66,6 +66,18 @@
       min-height: 60px;
       white-space: pre-wrap;
     }
+
+    select {
+      background: #111;
+      border: 1px solid #0aff9d;
+      color: #0aff9d;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 16px;
+      width: 100%;
+      box-shadow: 0 0 6px #0aff9d50;
+    }
   </style>
 </head>
 
@@ -75,6 +87,14 @@
 
   <h2>Ejecutar flujo N8N desde GitHub Pages</h2>
 
+  <p>Selecciona el flujo que deseas ejecutar:</p>
+
+  <!-- 🔥 Selector de flujo -->
+  <select id="flowSelector">
+    <option value="1">Flujo 1 (Webhook 1)</option>
+    <option value="2">Flujo 2 (Webhook 2)</option>
+  </select>
+
   <p>Escribe el texto que quieres resumir:</p>
 
   <textarea id="inputText" placeholder="Escribe algo aquí..."></textarea>
@@ -83,46 +103,47 @@
 
   <div id="result">Esperando interacción...</div>
 
-
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
-        const resultBox = document.getElementById("result");
+      const resultBox = document.getElementById("result");
 
-        // 🔥 SE ARREGLA AQUÍ
-        const rawText = document.getElementById("inputText").value.trim();
-        const texto = rawText.replace(/\n/g, "\\n");
+      const rawText = document.getElementById("inputText").value.trim();
+      const texto = rawText.replace(/\n/g, "\\n");
 
-        if (!texto) {
+      if (!texto) {
         resultBox.textContent = "⚠️ Ingresa un texto para resumir.";
         return;
-        }
+      }
 
-        resultBox.textContent = "Procesando resumen...";
+      resultBox.textContent = "Procesando resumen...";
 
-        try {
-        const webhookURL = window.ENV.WEBHOOK_URL;
+      // 🔥 Seleccionar el webhook según el <select>
+      const selectedFlow = document.getElementById("flowSelector").value;
+      const webhookURL =
+        selectedFlow === "1"
+          ? window.ENV.WEBHOOK_URL_1
+          : window.ENV.WEBHOOK_URL_2;
 
+      try {
         const response = await fetch(webhookURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ texto })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto })
         });
 
         const data = await response.json();
 
         if (data.resumen) {
-            resultBox.textContent = data.resumen;
+          resultBox.textContent = data.resumen;
         } else {
-            resultBox.textContent = "No se recibió un resumen válido.";
+          resultBox.textContent = "No se recibió un resumen válido.";
         }
 
-        } catch (error) {
+      } catch (error) {
         resultBox.textContent = "Error llamando al webhook:\n" + error;
-        }
+      }
     });
   </script>
-
-
 
 </body>
 
