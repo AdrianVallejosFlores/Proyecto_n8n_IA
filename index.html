@@ -5,52 +5,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trigger Webhook N8N</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-      background: #f9f9f9;
+      font-family: "Segoe UI", Arial, sans-serif;
+      padding: 40px;
+      background: #000;
+      color: #0aff9d;
+      text-shadow: 0 0 6px #0aff9d;
     }
 
-    #btn {
-      padding: 10px 18px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    #btn:hover {
-      background: #0056b3;
-    }
-
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #fff;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      white-space: pre-wrap;
+    h2 {
+      font-size: 28px;
+      color: #0aff9d;
+      text-shadow: 0 0 8px #00ffcc;
     }
 
     textarea {
       width: 100%;
-      height: 120px;
-      padding: 10px;
+      height: 140px;
+      padding: 12px;
       font-size: 15px;
       border-radius: 6px;
-      border: 1px solid #ccc;
+      border: 1px solid #0aff9d;
+      background: #111;
+      color: #0aff9d;
       resize: vertical;
+      outline: none;
+      box-shadow: 0 0 6px #0aff9d50;
+    }
+
+    #btn {
+      padding: 12px 20px;
+      background: #0aff9d;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 17px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-shadow: none;
+      transition: 0.2s;
+    }
+
+    #btn:hover {
+      background: #00d987;
+      box-shadow: 0 0 10px #0aff9d;
+    }
+
+    #result {
+      margin-top: 30px;
+      padding: 18px;
+      background: #0a0a0a;
+      border-left: 4px solid #0aff9d;
+      border-radius: 6px;
+      font-size: 17px;
+      color: #0aff9d;
+      text-shadow: 0 0 6px #0aff9d;
+      min-height: 60px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- 🔥 IMPORTANTE: cargar config.js antes del script -->
   <script src="config.js"></script>
 
   <h2>Ejecutar flujo N8N desde GitHub Pages</h2>
@@ -69,30 +89,32 @@
       const texto = document.getElementById("inputText").value.trim();
 
       if (!texto) {
-        resultBox.textContent = "Por favor ingresa un texto.";
+        resultBox.textContent = "⚠️ Ingresa un texto para resumir.";
         return;
       }
 
-      resultBox.textContent = "Ejecutando...";
+      resultBox.textContent = "Procesando resumen...";
 
       try {
-
-        // 👇 Usar variable desde config.js
         const webhookURL = window.ENV.WEBHOOK_URL;
 
         const response = await fetch(webhookURL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ texto })
         });
 
         const data = await response.json();
-        resultBox.textContent = "Respuesta del flujo:\n\n" + JSON.stringify(data, null, 2);
+
+        // 👉 Mostrar SOLO el resumen
+        if (data.resumen) {
+          resultBox.textContent = data.resumen;
+        } else {
+          resultBox.textContent = "No se recibió un resumen válido.";
+        }
 
       } catch (error) {
-        resultBox.textContent = "Error llamando al webhook:\n\n" + error;
+        resultBox.textContent = "Error llamando al webhook:\n" + error;
       }
     });
   </script>
