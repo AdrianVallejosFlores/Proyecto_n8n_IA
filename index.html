@@ -83,41 +83,46 @@
 
   <div id="result">Esperando interacción...</div>
 
+
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
-      const resultBox = document.getElementById("result");
-      const texto = document.getElementById("inputText").value.trim();
+        const resultBox = document.getElementById("result");
 
-      if (!texto) {
+        // 🔥 SE ARREGLA AQUÍ
+        const rawText = document.getElementById("inputText").value.trim();
+        const texto = rawText.replace(/\n/g, "\\n");
+
+        if (!texto) {
         resultBox.textContent = "⚠️ Ingresa un texto para resumir.";
         return;
-      }
+        }
 
-      resultBox.textContent = "Procesando resumen...";
+        resultBox.textContent = "Procesando resumen...";
 
-      try {
+        try {
         const webhookURL = window.ENV.WEBHOOK_URL;
 
         const response = await fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ texto })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
         });
 
         const data = await response.json();
 
-        // 👉 Mostrar SOLO el resumen
         if (data.resumen) {
-          resultBox.textContent = data.resumen;
+            resultBox.textContent = data.resumen;
         } else {
-          resultBox.textContent = "No se recibió un resumen válido.";
+            resultBox.textContent = "No se recibió un resumen válido.";
         }
 
-      } catch (error) {
+        } catch (error) {
         resultBox.textContent = "Error llamando al webhook:\n" + error;
-      }
+        }
     });
   </script>
+
+
 
 </body>
 
